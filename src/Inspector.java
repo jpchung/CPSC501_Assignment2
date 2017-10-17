@@ -37,26 +37,39 @@ public class Inspector {
         Class classObject = null;
         classObject = obj.getClass();
 
+        //get fields declared by the class
+        Field fields[] = classObject.getDeclaredFields();
+
         //check if need to introspect recursively on field objects
         if(recursive){
-
+            inspectClass(obj, classObject);
         }
         else if(!recursive){
-
-            //get declaring class
-            Class declaringClassObject = classObject.getDeclaringClass();
-                //if have toString method, should invoke dynamically for name
-
-            //get superclass and interfaces
-            Class superClassObject =  classObject.getSuperclass();
-
-            //get methods
-
-            //get fields
-
+            inspectFields(obj, classObject, fields);
         }
 
+    }
 
+    public void inspectClass(Object obj, Class classObject){
+        //get declaring class
+        Class declaringClassObject = classObject.getDeclaringClass();
+        //if have toString method, should invoke dynamically for name
+
+        //get superclass and interfaces
+        Class superClassObject =  classObject.getSuperclass();
+
+        //get methods
+
+        //get constructors
+        Constructor constructors[] = classObject.getConstructors();
+
+        //get fields
+        Field fieldArray[] = classObject.getDeclaredFields();
+    }
+
+    public void inspectFields(Object obj, Class classObject, Field[] fields){
 
     }
+
+
 }

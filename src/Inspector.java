@@ -92,7 +92,7 @@ public class Inspector {
 
             //query Method object for modifiers
             int modifiers = m.getModifiers();
-            System.out.println("      Modifiers: " + modifiers);
+            System.out.println("      Modifiers: " + Modifier.toString((modifiers)));
 
         }
 
@@ -108,8 +108,23 @@ public class Inspector {
             System.out.println();
 
             int modifiers = c.getModifiers();
-            System.out.println("      Modifiers: " + modifiers);
+            System.out.println("      Modifiers: " + Modifier.toString((modifiers)));
         }
+
+        //get fields
+        for(Field f : fieldObjects){
+            System.out.println("Field: " + f.getName());
+
+            //query Field object for type
+            Class fieldType = f.getType();
+            System.out.println("      Type: " + fieldType);
+
+            int modifiers = f.getModifiers();
+            System.out.println("      Modifiers: " + Modifier.toString((modifiers)));
+            //System.out.println("      Modifiers: " + modifiers);
+
+        }
+
 
 
     }

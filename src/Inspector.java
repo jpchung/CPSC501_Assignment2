@@ -57,7 +57,7 @@ public class Inspector {
             return;
         }
 
-        
+
     }
 
     public void inspectClass(Object obj, Class classObject, Field[] fieldObjects){
@@ -77,7 +77,7 @@ public class Inspector {
         //get constructors
         Constructor constructorObjects[] = classObject.getConstructors();
         for(Constructor c : constructorObjects){
-
+            System.out.println("Constructor: " + c.getName());
         }
 
 

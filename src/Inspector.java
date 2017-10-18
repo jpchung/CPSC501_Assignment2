@@ -71,13 +71,52 @@ public class Inspector {
         //get methods
         Method methodObjects[] = classObject.getDeclaredMethods();
         for(Method m : methodObjects){
+            //query Method object for name
             System.out.println("Method: " + m.getName());
+
+            //query Method object for exception types
+            System.out.print("      Exception types: ");
+            Class exceptionTypeObjects[] = m.getExceptionTypes();
+            if(exceptionTypeObjects.length > 0){
+                for(Class e : exceptionTypeObjects){
+                    System.out.print(" " + e.getName());
+                }
+            }
+            else
+                System.out.print("none");
+            System.out.println();
+
+            //query Method object for parameter types
+            System.out.print("      Parameter types: ");
+            Class parameterTypeObjects[] = m.getParameterTypes();
+            if(parameterTypeObjects.length > 0){
+                for(Class p: parameterTypeObjects){
+                    System.out.print(" " + p.getName());
+                }
+            }
+            else
+                System.out.print("none");
+            System.out.println();
+
+            //query Method object for return type
+            Class returnType = m.getReturnType();
+            System.out.println("      Return type: " + returnType.getName());
+
+            //query Method object for modifiers
+            int modifiers = m.getModifiers();
+            System.out.println("      Modifiers: " + modifiers);
+
         }
 
         //get constructors
         Constructor constructorObjects[] = classObject.getConstructors();
         for(Constructor c : constructorObjects){
+            //query Constructor objects for name, parameter types, and modifier
             System.out.println("Constructor: " + c.getName());
+
+            Class parameterTypes[] = c.getParameterTypes();
+
+            int modifiers = c.getModifiers();
         }
 
 

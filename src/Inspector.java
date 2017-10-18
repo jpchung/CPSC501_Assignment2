@@ -35,40 +35,59 @@ public class Inspector {
 
         //get metaobject for instantiated base level object
         Class classObject = null;
-        classObject = obj.getClass();
 
-        //get fields declared by the class
-        Field fields[] = classObject.getDeclaredFields();
+        System.out.println(obj);
+        try{
+            classObject = obj.getClass();
 
-        //check if need to introspect recursively on field objects
-        if(recursive){
-            inspectClass(obj, classObject);
+            //get fields declared by the class
+            Field fieldObjects[] = classObject.getDeclaredFields();
+
+            //get class
+            inspectClass(obj, classObject, fieldObjects);
+
+            //check if need to introspect recursively on field objects
+            if(recursive){
+                inspectFields(obj, classObject, fieldObjects);
+            }
+
+        } catch(Exception e){
+//            System.out.println(e);
+            e.printStackTrace();
+            return;
         }
-        else if(!recursive){
-            inspectFields(obj, classObject, fields);
-        }
 
+        
     }
 
-    public void inspectClass(Object obj, Class classObject){
-        //get declaring class
-        Class declaringClassObject = classObject.getDeclaringClass();
-        //if have toString method, should invoke dynamically for name
+    public void inspectClass(Object obj, Class classObject, Field[] fieldObjects){
+        //get name of declaring class
+        System.out.println("Declaring class: " + obj);
 
         //get superclass and interfaces
         Class superClassObject =  classObject.getSuperclass();
+        System.out.println("Superclass: " + superClassObject.getName());
 
         //get methods
+        Method methodObjects[] = classObject.getDeclaredMethods();
+        for(Method m : methodObjects){
+            System.out.println("Method: " + m.getName());
+        }
 
         //get constructors
-        Constructor constructors[] = classObject.getConstructors();
+        Constructor constructorObjects[] = classObject.getConstructors();
+        for(Constructor c : constructorObjects){
 
-        //get fields
-        Field fieldArray[] = classObject.getDeclaredFields();
+        }
+
+
     }
 
-    public void inspectFields(Object obj, Class classObject, Field[] fields){
+    public void inspectFields(Object obj, Class classObject, Field[] fieldObjects){
 
+        for(int i =0; i < fieldObjects.length; i++){
+
+        }
     }
 
 

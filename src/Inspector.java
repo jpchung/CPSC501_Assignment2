@@ -76,26 +76,14 @@ public class Inspector {
 
             //query Method object for exception types
             System.out.print("      Exception types: ");
-            Class exceptionTypeObjects[] = m.getExceptionTypes();
-            if(exceptionTypeObjects.length > 0){
-                for(Class e : exceptionTypeObjects){
-                    System.out.print(" " + e.getName());
-                }
-            }
-            else
-                System.out.print("none");
+            Class methodExceptionTypes[] = m.getExceptionTypes();
+            displayClassTypeObjects(methodExceptionTypes);
             System.out.println();
 
             //query Method object for parameter types
             System.out.print("      Parameter types: ");
-            Class parameterTypeObjects[] = m.getParameterTypes();
-            if(parameterTypeObjects.length > 0){
-                for(Class p: parameterTypeObjects){
-                    System.out.print(" " + p.getName());
-                }
-            }
-            else
-                System.out.print("none");
+            Class methodParameterTypes[] = m.getParameterTypes();
+            displayClassTypeObjects(methodParameterTypes);
             System.out.println();
 
             //query Method object for return type
@@ -114,9 +102,13 @@ public class Inspector {
             //query Constructor objects for name, parameter types, and modifier
             System.out.println("Constructor: " + c.getName());
 
-            Class parameterTypes[] = c.getParameterTypes();
+            System.out.print("      Parameter types: ");
+            Class constructorParameterTypes[] = c.getParameterTypes();
+            displayClassTypeObjects(constructorParameterTypes);
+            System.out.println();
 
             int modifiers = c.getModifiers();
+            System.out.println("      Modifiers: " + modifiers);
         }
 
 
@@ -127,6 +119,17 @@ public class Inspector {
         for(int i =0; i < fieldObjects.length; i++){
 
         }
+    }
+
+    //general method to display parameter/exception types for methods and constructors
+    private void displayClassTypeObjects(Class[] classTypeObjects){
+        if(classTypeObjects.length > 0){
+            for(Class c : classTypeObjects){
+                System.out.print(" " + c.getName());
+            }
+        }
+        else
+            System.out.print("none");
     }
 
 

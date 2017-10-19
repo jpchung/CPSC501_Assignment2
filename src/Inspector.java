@@ -48,7 +48,9 @@ public class Inspector {
 
             //check if need to introspect recursively on field objects
             if(recursive){
-                inspectFields(obj, classObject, fieldObjects);
+                System.out.printf("---- RECURSION ON %s: START ----\n", obj);
+                inspectFields(fieldObjects, obj, recursive);
+                System.out.printf("---- RECURSION ON %s: END ----\n", obj);
             }
 
         } catch(Exception e){
@@ -123,7 +125,15 @@ public class Inspector {
 
                 //query Field object for type
                 Class fieldType = f.getType();
-                System.out.println("      Type: " + fieldType);
+                if(fieldType.isArray()){
+                    System.out.println("      FIELD IS AN ARRAY");
+                }
+                else if(fieldType.isPrimitive()){
+                    System.out.println("      Type: " + fieldType);
+                }
+                else
+                    System.out.println("      FIELD IS AN OBJECT");
+
 
                 int modifiers = f.getModifiers();
                 System.out.println("      Modifiers: " + Modifier.toString((modifiers)));
@@ -135,20 +145,32 @@ public class Inspector {
                 System.out.println("      Value: " + fieldValue);
 
 
-            }catch(Exception e){
+            } catch(Exception e){
                 e.printStackTrace();
             }
 
-
         }
-
-
 
     }
 
-    public void inspectFields(Object obj, Class classObject, Field[] fieldObjects){
+    public void inspectFields(Field[] fieldObjects, Object obj, boolean recursive){
 
         for(Field f : fieldObjects){
+            try{
+
+                Class fieldType = f.getType();
+                if(!fieldType.isPrimitive()){
+                    System.out.println("\nRecursion on: " + f.getName());
+
+                    inspect(f.get(obj), recursive);
+                }
+
+                else
+                    System.out.println(f.getName() + " is Primitive");
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
 
         }
     }

@@ -36,7 +36,7 @@ public class Inspector {
         //get metaobject for instantiated base level object
         Class classObject = null;
 
-        System.out.println(obj);
+        System.out.println();
         try{
             classObject = obj.getClass();
 
@@ -52,7 +52,6 @@ public class Inspector {
             }
 
         } catch(Exception e){
-//            System.out.println(e);
             e.printStackTrace();
             return;
         }
@@ -64,9 +63,15 @@ public class Inspector {
         //get name of declaring class
         System.out.println("Declaring class: " + obj);
 
-        //get superclass and interfaces
+        //get superclass
         Class superClassObject =  classObject.getSuperclass();
         System.out.println("Superclass: " + superClassObject.getName());
+
+        //get interfaces
+        Class interfaceObjects[] = classObject.getInterfaces();
+        System.out.print("Interfaces: ");
+        displayClassTypeObjects(interfaceObjects);
+        System.out.println();
 
         //get methods
         Method methodObjects[] = classObject.getDeclaredMethods();
@@ -113,15 +118,27 @@ public class Inspector {
 
         //get fields
         for(Field f : fieldObjects){
-            System.out.println("Field: " + f.getName());
+            try{
+                System.out.println("Field: " + f.getName());
 
-            //query Field object for type
-            Class fieldType = f.getType();
-            System.out.println("      Type: " + fieldType);
+                //query Field object for type
+                Class fieldType = f.getType();
+                System.out.println("      Type: " + fieldType);
 
-            int modifiers = f.getModifiers();
-            System.out.println("      Modifiers: " + Modifier.toString((modifiers)));
-            //System.out.println("      Modifiers: " + modifiers);
+                int modifiers = f.getModifiers();
+                System.out.println("      Modifiers: " + Modifier.toString((modifiers)));
+                //System.out.println("      Modifiers: " +
+
+                //query for current value of field
+                f.setAccessible(true);
+                Object fieldValue = f.get(obj);
+                System.out.println("      Value: " + fieldValue);
+
+
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
 
         }
 
@@ -131,16 +148,20 @@ public class Inspector {
 
     public void inspectFields(Object obj, Class classObject, Field[] fieldObjects){
 
-        for(int i =0; i < fieldObjects.length; i++){
+        for(Field f : fieldObjects){
 
         }
     }
 
-    //general method to display parameter/exception types for methods and constructors
+    //general method to display names of items in class Object arrays
     private void displayClassTypeObjects(Class[] classTypeObjects){
         if(classTypeObjects.length > 0){
             for(Class c : classTypeObjects){
                 System.out.print(" " + c.getName());
+
+                //add a comma if not last element in array
+                if(classTypeObjects[classTypeObjects.length -1] != c)
+                    System.out.print(",");
             }
         }
         else

@@ -106,11 +106,11 @@ public class Inspector {
             String modifierString = Modifier.toString(modifiers);
             //System.out.println("      Modifiers: " + modifierString);
 
-            //cleaned up Method object display to single line output
+            //cleaned up Method object display to single line output (method signature)
             System.out.print("Method: " +
-                    modifierString + " "
-                    + returnType.getName() + " "
-                    + m.getName() + "(");
+                    modifierString + " " +
+                    returnType.getName() + " " +
+                    m.getName() + "(");
             displayClassTypeObjects(methodParameterTypes);
             System.out.print(")");
             if(methodExceptionTypes.length > 0){
@@ -125,15 +125,21 @@ public class Inspector {
         Constructor constructorObjects[] = classObject.getConstructors();
         for(Constructor c : constructorObjects){
             //query Constructor objects for name, parameter types, and modifier
-            System.out.println("Constructor: " + c.getName());
+            //System.out.println("Constructor: " + c.getName());
 
-            System.out.print("      Parameter types: ");
+            //System.out.print("      Parameter types: ");
             Class constructorParameterTypes[] = c.getParameterTypes();
-            displayClassTypeObjects(constructorParameterTypes);
-            System.out.println();
+            //displayClassTypeObjects(constructorParameterTypes);
+            //System.out.println();
 
             int modifiers = c.getModifiers();
-            System.out.println("      Modifiers: " + Modifier.toString((modifiers)));
+            String modifierString = Modifier.toString(modifiers);
+            //System.out.println("      Modifiers: " + modifierString);
+
+            //display Constructor as single line output (method signature)
+            System.out.print("Constructor: " + modifierString + " " + c.getName() +"(");
+            displayClassTypeObjects(constructorParameterTypes);
+            System.out.println(")");
         }
 
         //get fields

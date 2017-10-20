@@ -5,6 +5,7 @@
  * Inspector class to recursively introspect on objects
  */
 import java.lang.reflect.*;
+import java.util.Arrays;
 
 public class Inspector {
 
@@ -82,37 +83,28 @@ public class Inspector {
         //get methods
         Method methodObjects[] = classObject.getDeclaredMethods();
         for(Method m : methodObjects){
-            //query Method object for name
-            //System.out.println("Method: " + m.getName());
 
             //query Method object for exception types
-            //System.out.print("      Exception types: ");
             Class methodExceptionTypes[] = m.getExceptionTypes();
-            //displayClassTypeObjects(methodExceptionTypes);
-            //System.out.println();
 
             //query Method object for parameter types
-            //System.out.print("      Parameter types: ");
             Class methodParameterTypes[] = m.getParameterTypes();
-            //displayClassTypeObjects(methodParameterTypes);
-            //System.out.println();
 
             //query Method object for return type
             Class returnType = m.getReturnType();
-            //System.out.println("      Return type: " + returnType.getName());
 
             //query Method object for modifiers
             int modifiers = m.getModifiers();
             String modifierString = Modifier.toString(modifiers);
-            //System.out.println("      Modifiers: " + modifierString);
 
-            //cleaned up Method object display to single line output (method signature)
+            //display Method object as single line output (method signature)
             System.out.print("Method: " +
                     modifierString + " " +
                     returnType.getName() + " " +
                     m.getName() + "(");
             displayClassTypeObjects(methodParameterTypes);
             System.out.print(")");
+            //check if need to print exceptions
             if(methodExceptionTypes.length > 0){
                 System.out.print(" throws ");
                 displayClassTypeObjects(methodExceptionTypes);
@@ -125,16 +117,10 @@ public class Inspector {
         Constructor constructorObjects[] = classObject.getConstructors();
         for(Constructor c : constructorObjects){
             //query Constructor objects for name, parameter types, and modifier
-            //System.out.println("Constructor: " + c.getName());
-
-            //System.out.print("      Parameter types: ");
             Class constructorParameterTypes[] = c.getParameterTypes();
-            //displayClassTypeObjects(constructorParameterTypes);
-            //System.out.println();
 
             int modifiers = c.getModifiers();
             String modifierString = Modifier.toString(modifiers);
-            //System.out.println("      Modifiers: " + modifierString);
 
             //display Constructor as single line output (method signature)
             System.out.print("Constructor: " + modifierString + " " + c.getName() +"(");
@@ -149,6 +135,8 @@ public class Inspector {
                 Object fieldValue = f.get(obj);
 
                 System.out.println("Field: " + f.getName());
+                int modifiers = f.getModifiers();
+                System.out.println("      Modifiers: " + Modifier.toString((modifiers)));
 
                 //query Field object for type
                 Class fieldType = f.getType();
@@ -159,7 +147,18 @@ public class Inspector {
                     int arrayLength = Array.getLength(f.get(obj));
                     System.out.println("      Length: " + arrayLength);
 
-                    //Also print name, component type, length  and contents of any arrays
+                    //print contents of array
+                    Object arrayElements[] = (Object[]) fieldValue;
+                    for(int i =0; i < arrayLength; i++){
+
+                        Object element = arrayElements[i];
+
+                        String elementDisplay = null;
+                        if(element != null)
+                             elementDisplay = element.toString();
+
+                        System.out.println("      index " + i + ": " + elementDisplay);
+                    }
                 }
                 else if(fieldType.isPrimitive()){
                     System.out.println("      Type: " + fieldType);
@@ -173,10 +172,6 @@ public class Inspector {
                         System.out.println("      Value: " + fieldValue.getClass().getName() + " " + fieldValue.hashCode());
                 }
 
-
-
-                int modifiers = f.getModifiers();
-                System.out.println("      Modifiers: " + Modifier.toString((modifiers)));
 
 
             } catch(Exception e){
@@ -197,7 +192,6 @@ public class Inspector {
                 Class fieldType = f.getType();
                 if(fieldType.isArray()){
                     System.out.println(f.getName() + ": Array");
-
                     //should check each item in array to see if object
 
 

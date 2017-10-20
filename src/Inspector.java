@@ -55,7 +55,7 @@ public class Inspector {
                 }
             }
             else
-                System.out.println("object is null, can't inspect...");
+                System.out.println("object is null, can't inspect...\n");
 
         } catch(Exception e){
             e.printStackTrace();
@@ -125,29 +125,31 @@ public class Inspector {
         //get fields
         for(Field f : fieldObjects){
             try{
+                f.setAccessible(true);
+                Object fieldValue = f.get(obj);
+
                 System.out.println("Field: " + f.getName());
 
                 //query Field object for type
                 Class fieldType = f.getType();
                 if(fieldType.isArray())
                     System.out.println("      Type: Array");
-
                 else if(fieldType.isPrimitive()){
                     System.out.println("      Type: " + fieldType);
+                    System.out.println("      Value: " + fieldValue);
+                }
+                else{
+                    System.out.println("      Type: Object");
+
+                    //let value be object's class and id hashcode
+                    if(fieldValue != null)
+                        System.out.println("      Value: " + fieldValue.getClass().getName() + " " + fieldValue.hashCode());
                 }
 
-                else
-                    System.out.println("      Type: Object");
 
 
                 int modifiers = f.getModifiers();
                 System.out.println("      Modifiers: " + Modifier.toString((modifiers)));
-
-                //query for current value of field
-                f.setAccessible(true);
-                Object fieldValue = f.get(obj);
-
-                System.out.println("      Value: " + fieldValue);
 
 
             } catch(Exception e){
@@ -158,6 +160,7 @@ public class Inspector {
 
     }
 
+    //method to recursively introspect on Field objects and Array elements (if objects)
     public void inspectFields(Field[] fieldObjects, Object obj, boolean recursive){
 
         System.out.println();
@@ -165,7 +168,17 @@ public class Inspector {
             try{
 
                 Class fieldType = f.getType();
-                if(!fieldType.isPrimitive()){
+                if(fieldType.isArray()){
+                    System.out.println(f.getName() + ": Array");
+
+                    //should check each item in array to see if object
+                    int arrayLength = Array.getLength(f.get(obj));
+                    System.out.println("      Length: " + arrayLength);
+                    Class arrayType = fieldType.getComponentType();
+                    System.out.println("      Component Type: " + arrayType.getName());
+
+                }
+                else if(!fieldType.isPrimitive()){
                     System.out.println(f.getName() + ": Object");
                     inspect(f.get(obj), recursive);
                 }

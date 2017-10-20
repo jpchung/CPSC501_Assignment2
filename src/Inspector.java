@@ -83,27 +83,41 @@ public class Inspector {
         Method methodObjects[] = classObject.getDeclaredMethods();
         for(Method m : methodObjects){
             //query Method object for name
-            System.out.println("Method: " + m.getName());
+            //System.out.println("Method: " + m.getName());
 
             //query Method object for exception types
-            System.out.print("      Exception types: ");
+            //System.out.print("      Exception types: ");
             Class methodExceptionTypes[] = m.getExceptionTypes();
-            displayClassTypeObjects(methodExceptionTypes);
-            System.out.println();
+            //displayClassTypeObjects(methodExceptionTypes);
+            //System.out.println();
 
             //query Method object for parameter types
-            System.out.print("      Parameter types: ");
+            //System.out.print("      Parameter types: ");
             Class methodParameterTypes[] = m.getParameterTypes();
-            displayClassTypeObjects(methodParameterTypes);
-            System.out.println();
+            //displayClassTypeObjects(methodParameterTypes);
+            //System.out.println();
 
             //query Method object for return type
             Class returnType = m.getReturnType();
-            System.out.println("      Return type: " + returnType.getName());
+            //System.out.println("      Return type: " + returnType.getName());
 
             //query Method object for modifiers
             int modifiers = m.getModifiers();
-            System.out.println("      Modifiers: " + Modifier.toString((modifiers)));
+            String modifierString = Modifier.toString(modifiers);
+            //System.out.println("      Modifiers: " + modifierString);
+
+            //cleaned up Method object display to single line output
+            System.out.print("Method: " +
+                    modifierString + " "
+                    + returnType.getName() + " "
+                    + m.getName() + "(");
+            displayClassTypeObjects(methodParameterTypes);
+            System.out.print(")");
+            if(methodExceptionTypes.length > 0){
+                System.out.print(" throws ");
+                displayClassTypeObjects(methodExceptionTypes);
+            }
+            System.out.println();
 
         }
 
@@ -132,8 +146,15 @@ public class Inspector {
 
                 //query Field object for type
                 Class fieldType = f.getType();
-                if(fieldType.isArray())
+                if(fieldType.isArray()){
                     System.out.println("      Type: Array");
+                    Class arrayType= fieldType.getComponentType();
+                    System.out.println("      Component Type: " + arrayType.getName());
+                    int arrayLength = Array.getLength(f.get(obj));
+                    System.out.println("      Length: " + arrayLength);
+
+                    //Also print name, component type, length  and contents of any arrays
+                }
                 else if(fieldType.isPrimitive()){
                     System.out.println("      Type: " + fieldType);
                     System.out.println("      Value: " + fieldValue);
@@ -172,10 +193,7 @@ public class Inspector {
                     System.out.println(f.getName() + ": Array");
 
                     //should check each item in array to see if object
-                    int arrayLength = Array.getLength(f.get(obj));
-                    System.out.println("      Length: " + arrayLength);
-                    Class arrayType = fieldType.getComponentType();
-                    System.out.println("      Component Type: " + arrayType.getName());
+
 
                 }
                 else if(!fieldType.isPrimitive()){
@@ -197,15 +215,15 @@ public class Inspector {
     private void displayClassTypeObjects(Class[] classTypeObjects){
         if(classTypeObjects.length > 0){
             for(Class c : classTypeObjects){
-                System.out.print(" " + c.getName());
+                System.out.print(c.getName());
 
                 //add a comma if not last element in array
                 if(classTypeObjects[classTypeObjects.length -1] != c)
-                    System.out.print(",");
+                    System.out.print(", ");
             }
         }
         else
-            System.out.print("none");
+            System.out.print("");
     }
 
 

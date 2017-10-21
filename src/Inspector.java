@@ -39,24 +39,20 @@ public class Inspector {
 
         System.out.println();
         try{
-            if(obj != null){
-                classObject = obj.getClass();
+            classObject = obj.getClass();
 
-                //get fields declared by the class
-                Field fieldObjects[] = classObject.getDeclaredFields();
+            //get fields declared by the class
+            Field fieldObjects[] = classObject.getDeclaredFields();
 
-                //get class
-                inspectClass(obj, classObject, fieldObjects);
+            //get class
+            inspectClass(obj, classObject, fieldObjects);
 
-                //check if need to introspect recursively on field objects
-                if(recursive){
-                    System.out.printf("\n---- RECURSION ON OBJECTS IN %s: START ----\n", classObject.getName());
-                    inspectFields(fieldObjects, obj, recursive);
-                    System.out.printf("\n---- RECURSION ON OBJECTS IN %s: END ----\n\n", classObject.getName());
-                }
+            //check if need to introspect recursively on field objects
+            if(recursive){
+                System.out.printf("\n---- RECURSION ON OBJECTS IN %s: START ----\n", classObject.getName());
+                inspectFields(fieldObjects, obj, recursive);
+                System.out.printf("\n---- RECURSION ON OBJECTS IN %s: END ----\n\n", classObject.getName());
             }
-            else
-                System.out.println("object is null, can't inspect...\n");
 
         } catch(Exception e){
             e.printStackTrace();
@@ -86,18 +82,7 @@ public class Inspector {
 
         //get constructors
         Constructor constructorObjects[] = classObject.getConstructors();
-        for(Constructor c : constructorObjects){
-            //query Constructor objects for name, parameter types, and modifier
-            Class constructorParameterTypes[] = c.getParameterTypes();
-
-            int modifiers = c.getModifiers();
-            String modifierString = Modifier.toString(modifiers);
-
-            //display Constructor as single line output (method signature)
-            System.out.print("Constructor: " + modifierString + " " + c.getName() +"(");
-            displayClassTypeObjects(constructorParameterTypes);
-            System.out.println(")");
-        }
+        inspectConstructors(constructorObjects);
 
         //get fields
         for(Field f : fieldObjects){
@@ -116,7 +101,7 @@ public class Inspector {
                 Class fieldType = f.getType();
                 if(fieldType.isArray()){
                     Class arrayType= fieldType.getComponentType();
-                    int arrayLength = Array.getLength(f.get(obj));
+                    int arrayLength = Array.getLength(fieldValue);
                     fieldTypeString = arrayType.getName() + "[" + arrayLength + "]";
 
                 }
@@ -170,17 +155,29 @@ public class Inspector {
 
                 Class fieldType = f.getType();
                 if(fieldType.isArray()){
-                    System.out.println(f.getName() + ": Array");
+                    System.out.println("Field: " + f.getName() + " - Array");
                     //should check each item in array to see if object
+                    Object fieldValue = f.get(obj);
+                    int arrayLength = Array.getLength(fieldValue);
+                    Object arrayElements[] = (Object[]) fieldValue;
+                    Class arrayType= fieldType.getComponentType();
+                    System.out.println("        k made it here...");
+
 
 
                 }
                 else if(!fieldType.isPrimitive()){
-                    System.out.println(f.getName() + ": Object");
-                    inspect(f.get(obj), recursive);
+
+                    System.out.println("Field: " + f.getName() + " - Object");
+
+                    if(f.get(obj) != null)
+                        inspect(f.get(obj), recursive);
+                    else
+                        System.out.println("      object is null...\n");
+
                 }
                 else
-                    System.out.println(f.getName() + ": Primitive");
+                    System.out.println("Field: " + f.getName() + " - Primitive");
 
             }
             catch(Exception e){
@@ -237,6 +234,21 @@ public class Inspector {
             }
             System.out.println();
 
+        }
+    }
+
+    public void inspectConstructors(Constructor[] constructorObjects){
+        for(Constructor c : constructorObjects){
+            //query Constructor objects for name, parameter types, and modifier
+            Class constructorParameterTypes[] = c.getParameterTypes();
+
+            int modifiers = c.getModifiers();
+            String modifierString = Modifier.toString(modifiers);
+
+            //display Constructor as single line output (method signature)
+            System.out.print("Constructor: " + modifierString + " " + c.getName() +"(");
+            displayClassTypeObjects(constructorParameterTypes);
+            System.out.println(")");
         }
     }
 

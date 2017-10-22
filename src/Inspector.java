@@ -89,13 +89,13 @@ public class Inspector {
         inspectFieldValues(obj, fieldObjects);
 
         if(classObject.isArray()){
-            System.out.println("    Array Object");
 
+            Class arrayType = classObject.getComponentType();
+            System.out.println("Component Type: " + arrayType.getName());
+
+            //TO FIX: Class Cast exception for casting arrays
             Object arrayElements[] = (Object[]) obj;
-            int arrayLength = Array.getLength(obj);
-            for(int i = 0; i < arrayLength; i++){
-                System.out.println("index " + i);
-            }
+            displayArrayElements(arrayElements);
 
 
         }
@@ -246,18 +246,10 @@ public class Inspector {
 
                 //print contents if field is an array
                 if(fieldType.isArray()){
-                    int arrayLength = Array.getLength(fieldValue);
 
+                    //TO FIX: Class Cast exception for casting arrays
                     Object arrayElements[] = (Object[]) fieldValue;
-                    for(int i =0; i < arrayLength; i++){
-                        Object element = arrayElements[i];
-
-                        String elementDisplay = null;
-                        if(element != null)
-                            elementDisplay = element.toString();
-
-                        System.out.println("      index " + i + ": " + elementDisplay);
-                    }
+                    displayArrayElements(arrayElements);
                 }
                 //otherwise just print value
                 else
@@ -267,6 +259,27 @@ public class Inspector {
                 e.printStackTrace();
             }
 
+        }
+    }
+
+    //generic method to display elements in an object array
+    public void displayArrayElements(Object[] arrayElements){
+
+        for(int i =0; i < arrayElements.length; i++){
+            Object element = arrayElements[i];
+
+            String elementDisplay = null;
+            if(element != null){
+                elementDisplay = element.toString();
+
+                //value of element if object
+                Class elementClass = element.getClass();
+                if(!elementClass.isPrimitive() && !elementClass.isArray())
+                //if(!elementClass.isPrimitive())
+                    elementDisplay = elementClass.getName() + " " + element.hashCode();
+            }
+
+            System.out.println("      index " + i + ": " + elementDisplay);
         }
     }
 

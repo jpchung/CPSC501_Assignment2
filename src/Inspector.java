@@ -41,6 +41,7 @@ public class Inspector {
         try{
             classObject = obj.getClass();
 
+
             //get fields declared by the class
             Field fieldObjects[] = classObject.getDeclaredFields();
 
@@ -85,62 +86,17 @@ public class Inspector {
         inspectConstructors(constructorObjects);
 
         //get fields
-        for(Field f : fieldObjects){
-            try{
-                f.setAccessible(true);
-                Object fieldValue = f.get(obj);
+        inspectFieldValues(obj, fieldObjects);
 
-                //query for field modifiers
-                int modifiers = f.getModifiers();
-                String modifierString = Modifier.toString(modifiers);
+        if(classObject.isArray()){
+            System.out.println("    Array Object");
 
-                String fieldTypeString = null;
-                String fieldValueString = null;
-
-                //query Field object for type, and value if not an array
-                Class fieldType = f.getType();
-                if(fieldType.isArray()){
-                    Class arrayType= fieldType.getComponentType();
-                    int arrayLength = Array.getLength(fieldValue);
-                    fieldTypeString = arrayType.getName() + "[" + arrayLength + "]";
-
-                }
-                else{
-                    fieldTypeString = fieldType.toString();
-                    if(fieldType.isPrimitive()){
-                        fieldValueString = fieldValue.toString();
-                    }
-                    else if(fieldValue != null){
-                        //let value be object's class and id hashcode if instantiated
-                        fieldValueString = fieldValue.getClass().getName() + " " + fieldValue.hashCode();
-
-                        //otherwise defaults to null
-                    }
-                }
-                System.out.println("Field: " + modifierString + " " + fieldTypeString + " " + f.getName());
-
-                //print contents if field is an array
-                if(fieldType.isArray()){
-                    int arrayLength = Array.getLength(f.get(obj));
-
-                    Object arrayElements[] = (Object[]) fieldValue;
-                    for(int i =0; i < arrayLength; i++){
-                        Object element = arrayElements[i];
-
-                        String elementDisplay = null;
-                        if(element != null)
-                            elementDisplay = element.toString();
-
-                        System.out.println("      index " + i + ": " + elementDisplay);
-                    }
-                }
-                //otherwise just print value
-                else
-                    System.out.println("      Value: " + fieldValueString);
-
-            } catch(Exception e){
-                e.printStackTrace();
+            Object arrayElements[] = (Object[]) obj;
+            int arrayLength = Array.getLength(obj);
+            for(int i = 0; i < arrayLength; i++){
+                System.out.println("index " + i);
             }
+
 
         }
 
@@ -152,7 +108,6 @@ public class Inspector {
         System.out.println();
         for(Field f : fieldObjects){
             try{
-
                 Class fieldType = f.getType();
                 if(fieldType.isArray()){
                     System.out.println("Field: " + f.getName() + " - Array");
@@ -237,6 +192,7 @@ public class Inspector {
         }
     }
 
+    //inspect and display Constructor objects
     public void inspectConstructors(Constructor[] constructorObjects){
         for(Constructor c : constructorObjects){
             //query Constructor objects for name, parameter types, and modifier
@@ -249,6 +205,68 @@ public class Inspector {
             System.out.print("Constructor: " + modifierString + " " + c.getName() +"(");
             displayClassTypeObjects(constructorParameterTypes);
             System.out.println(")");
+        }
+    }
+
+    //inspect and display type and values for Fields
+    public void inspectFieldValues(Object obj, Field[] fieldObjects){
+        for(Field f : fieldObjects){
+            try{
+                f.setAccessible(true);
+                Object fieldValue = f.get(obj);
+
+                //query for field modifiers
+                int modifiers = f.getModifiers();
+                String modifierString = Modifier.toString(modifiers);
+
+                String fieldTypeString = null;
+                String fieldValueString = null;
+
+                //query Field object for type, and value if not an array
+                Class fieldType = f.getType();
+                if(fieldType.isArray()){
+                    Class arrayType= fieldType.getComponentType();
+                    int arrayLength = Array.getLength(fieldValue);
+                    fieldTypeString = arrayType.getName() + "[" + arrayLength + "]";
+
+                }
+                else{
+                    fieldTypeString = fieldType.toString();
+                    if(fieldType.isPrimitive()){
+                        fieldValueString = fieldValue.toString();
+                    }
+                    else if(fieldValue != null){
+                        //let value be object's class and id hashcode if instantiated
+                        fieldValueString = fieldValue.getClass().getName() + " " + fieldValue.hashCode();
+
+                        //otherwise defaults to null
+                    }
+                }
+                System.out.println("Field: " + modifierString + " " + fieldTypeString + " " + f.getName());
+
+                //print contents if field is an array
+                if(fieldType.isArray()){
+                    int arrayLength = Array.getLength(fieldValue);
+
+                    Object arrayElements[] = (Object[]) fieldValue;
+                    for(int i =0; i < arrayLength; i++){
+                        Object element = arrayElements[i];
+
+                        String elementDisplay = null;
+                        if(element != null)
+                            elementDisplay = element.toString();
+
+                        System.out.println("      index " + i + ": " + elementDisplay);
+                    }
+                }
+                //otherwise just print value
+                else
+                    System.out.println("      Value: " + fieldValueString);
+
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+
         }
     }
 

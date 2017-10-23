@@ -71,6 +71,10 @@ public class Inspector {
         Class superClassObject =  classObject.getSuperclass();
         System.out.println("Superclass: " + superClassObject.getName());
 
+        int superClassCounter = 1;
+        inspectSuperclass(superClassObject, superClassCounter);
+
+
         //get interfaces
         Class interfaceObjects[] = classObject.getInterfaces();
         System.out.print("Interfaces: ");
@@ -326,6 +330,21 @@ public class Inspector {
         }
         return objArray;
 
+    }
+
+    private void inspectSuperclass(Class superClass, int superClassCounter){
+        System.out.println("\n>>>>> Inspecting Superclass: START <<<<<");
+        if(superClass.getSuperclass() != null){
+            System.out.println("    super has another super!");
+            superClassCounter++;
+            System.out.println(superClassCounter);
+            inspectSuperclass(superClass.getSuperclass(), superClassCounter);
+
+        }
+        else
+            System.out.println("    super doesn't have super...");
+
+        System.out.println(">>>>> Inspecting Superclass: END <<<<<\n");
     }
 
 

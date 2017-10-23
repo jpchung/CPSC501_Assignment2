@@ -71,25 +71,12 @@ public class Inspector {
         Class superClassObject =  classObject.getSuperclass();
         System.out.println("Superclass: " + superClassObject.getName());
 
-        System.out.printf("\n>>>>>> INSPECT SUPERCLASS %s: START\n\n", superClassObject.getName());
+        System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: START\n\n", superClassObject.getName());
 
         //get constructors/methods/fields/field values fo superclass
-        Constructor superConstructors[] = superClassObject.getConstructors();
-        inspectConstructors(superConstructors);
+        inspectSuperclass(obj, superClassObject);
 
-        Method superMethods[] = superClassObject.getDeclaredMethods();
-        inspectMethods(superMethods);
-
-        Field superFields[] = superClassObject.getDeclaredFields();
-
-        inspectFieldValues(obj,superFields);
-
-
-
-        System.out.printf("\n>>>>>> INSPECT SUPERCLASS %s: END\n\n", superClassObject.getName());
-
-        int superClassCounter = 1;
-        //inspectSuperclass(objSuper, superClassObject, superClassCounter);
+        System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: END\n\n", superClassObject.getName());
 
 
         //get interfaces
@@ -349,24 +336,16 @@ public class Inspector {
 
     }
 
-    private void inspectSuperclass(Object obj,Class superClass, int superClassCounter){
-        System.out.println("\n>>>>> Inspecting Superclass: START <<<<<");
-        if(superClass.getSuperclass() != null){
-            System.out.println("    super has another super!");
-            superClassCounter++;
-            System.out.println(superClassCounter);
-            Object objSuper = (Object) superClass.getSuperclass();
+    private void inspectSuperclass(Object obj,Class superClass){
+        Constructor superConstructors[] = superClass.getConstructors();
+        inspectConstructors(superConstructors);
 
-            inspectSuperclass(objSuper,superClass.getSuperclass(), superClassCounter);
+        Method superMethods[] = superClass.getDeclaredMethods();
+        inspectMethods(superMethods);
 
-        }
-        else{
-            System.out.println("    super doesn't have super...");
+        Field superFields[] = superClass.getDeclaredFields();
 
-
-        }
-
-        System.out.println(">>>>> Inspecting Superclass: END <<<<<\n");
+        inspectFieldValues(obj,superFields);
     }
 
 

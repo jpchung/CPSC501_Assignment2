@@ -88,13 +88,13 @@ public class Inspector {
         //get fields
         inspectFieldValues(obj, fieldObjects);
 
+        //display contents if initial object is an array
         if(classObject.isArray()){
 
             Class arrayType = classObject.getComponentType();
             System.out.println("Component Type: " + arrayType.getName());
 
-            //TO FIX: Class Cast exception for casting arrays
-            Object arrayElements[] = (Object[]) obj;
+            Object arrayElements[]  = getObjectArray(obj);
             displayArrayElements(arrayElements);
 
 
@@ -247,8 +247,7 @@ public class Inspector {
                 //print contents if field is an array
                 if(fieldType.isArray()){
 
-                    //TO FIX: Class Cast exception for casting arrays
-                    Object arrayElements[] = (Object[]) fieldValue;
+                    Object arrayElements[] = getObjectArray(fieldValue);
                     displayArrayElements(arrayElements);
                 }
                 //otherwise just print value
@@ -281,6 +280,26 @@ public class Inspector {
 
             System.out.println("      index " + i + ": " + elementDisplay);
         }
+    }
+
+    //get array from Object that has Array class type
+    private Object[] getObjectArray(Object obj){
+
+        Object[] objArray;
+        //if obj is already an object array, just cast and return
+        if(obj instanceof Object[]){
+            objArray =  (Object[]) obj;
+        }
+        //otherwise obj is a primitive array, so get elements by index and wrap primitives
+        else{
+            int arrayLength = Array.getLength(obj);
+            objArray = new Object[arrayLength];
+            for(int i = 0; i < arrayLength; i++){
+                objArray[i] = Array.get(obj, i);
+            }
+        }
+        return objArray;
+
     }
 
 

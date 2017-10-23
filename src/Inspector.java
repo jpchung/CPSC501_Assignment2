@@ -70,9 +70,19 @@ public class Inspector {
         //get superclass
         Class superClassObject =  classObject.getSuperclass();
         System.out.println("Superclass: " + superClassObject.getName());
+        Object objSuper = (Object) superClassObject;
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> SUPERCLASS: START");
+        //get constructors/methods/fields/field values fo superclass
+        Constructor superConstructors[] = superClassObject.getConstructors();
+        inspectConstructors(superConstructors);
+        Method superMethods[] = superClassObject.getDeclaredMethods();
+        inspectMethods(superMethods);
+        Field superFields[] = superClassObject.getDeclaredFields();
+        //inspectFieldValues(objSuper,superFields);
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> SUPERCLASS: END");
 
         int superClassCounter = 1;
-        inspectSuperclass(superClassObject, superClassCounter);
+        //inspectSuperclass(objSuper, superClassObject, superClassCounter);
 
 
         //get interfaces
@@ -332,17 +342,22 @@ public class Inspector {
 
     }
 
-    private void inspectSuperclass(Class superClass, int superClassCounter){
+    private void inspectSuperclass(Object obj,Class superClass, int superClassCounter){
         System.out.println("\n>>>>> Inspecting Superclass: START <<<<<");
         if(superClass.getSuperclass() != null){
             System.out.println("    super has another super!");
             superClassCounter++;
             System.out.println(superClassCounter);
-            inspectSuperclass(superClass.getSuperclass(), superClassCounter);
+            Object objSuper = (Object) superClass.getSuperclass();
+
+            inspectSuperclass(objSuper,superClass.getSuperclass(), superClassCounter);
 
         }
-        else
+        else{
             System.out.println("    super doesn't have super...");
+
+
+        }
 
         System.out.println(">>>>> Inspecting Superclass: END <<<<<\n");
     }

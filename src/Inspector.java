@@ -50,9 +50,9 @@ public class Inspector {
 
             //check if need to introspect recursively on field objects
             if(recursive){
-                System.out.printf("\n---- RECURSION ON OBJECTS IN %s: START ----\n", classObject.getName());
+                System.out.printf("\n---- RECURSION ON FIELD OBJECTS IN %s: START ----\n", classObject.getName());
                 inspectFields(fieldObjects, obj, recursive);
-                System.out.printf("\n---- RECURSION ON OBJECTS IN %s: END ----\n\n", classObject.getName());
+                System.out.printf("\n---- RECURSION ON FIELD OBJECTS IN %s: END ----\n\n", classObject.getName());
             }
 
         } catch(Exception e){
@@ -109,20 +109,45 @@ public class Inspector {
         for(Field f : fieldObjects){
             try{
                 Class fieldType = f.getType();
+
+                //field is an array, check array if elements are objects to recurse on
                 if(fieldType.isArray()){
-                    System.out.println("Field: " + f.getName() + " - Array");
-                    //should check each item in array to see if object
+                    System.out.print("Field: " + f.getName() + " - Array");
+
                     Object fieldValue = f.get(obj);
                     int arrayLength = Array.getLength(fieldValue);
-                    Object arrayElements[] = (Object[]) fieldValue;
+                    Object arrayElements[] = getObjectArray(fieldValue);
                     Class arrayType= fieldType.getComponentType();
-                    System.out.println("        k made it here...");
+
+                    //array consists of objects, recurse if not empty on non-null elements
+                    if(!arrayType.isPrimitive()){
+                        System.out.printf(" (%s)\n", arrayType.getTypeName());
+
+                        //check if array has  non-null elements to recurse on
+                        if(arrayElements.length >0) {
+                            for(int i = 0; i < arrayLength; i++){
+                                Object element =  arrayElements[i];
+                                String elementTypeString = null;
+
+                                //recurse on non-null element
+                                if(element != null)
+                                    inspect(element, recursive);
+                                else
+                                    System.out.println("      object is null...");
+                            }
+                        }
+                        else
+                            System.out.println("      Array is empty...");
 
 
+                    }
+                    //otherwise primitive array, don't recurse on elements
+                    else
+                        System.out.println(" (Primitive)");
 
                 }
+                //field is an object, recurse on it if not null
                 else if(!fieldType.isPrimitive()){
-
                     System.out.println("Field: " + f.getName() + " - Object");
 
                     if(f.get(obj) != null)
@@ -131,6 +156,7 @@ public class Inspector {
                         System.out.println("      object is null...\n");
 
                 }
+                //otherwise field is primitive, don't recurse
                 else
                     System.out.println("Field: " + f.getName() + " - Primitive");
 

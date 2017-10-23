@@ -70,16 +70,23 @@ public class Inspector {
         //get superclass
         Class superClassObject =  classObject.getSuperclass();
         System.out.println("Superclass: " + superClassObject.getName());
-        Object objSuper = (Object) superClassObject;
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> SUPERCLASS: START");
+
+        System.out.printf("\n>>>>>> INSPECT SUPERCLASS %s: START\n\n", superClassObject.getName());
+
         //get constructors/methods/fields/field values fo superclass
         Constructor superConstructors[] = superClassObject.getConstructors();
         inspectConstructors(superConstructors);
+
         Method superMethods[] = superClassObject.getDeclaredMethods();
         inspectMethods(superMethods);
+
         Field superFields[] = superClassObject.getDeclaredFields();
-        //inspectFieldValues(objSuper,superFields);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> SUPERCLASS: END");
+
+        inspectFieldValues(obj,superFields);
+
+
+
+        System.out.printf("\n>>>>>> INSPECT SUPERCLASS %s: END\n\n", superClassObject.getName());
 
         int superClassCounter = 1;
         //inspectSuperclass(objSuper, superClassObject, superClassCounter);

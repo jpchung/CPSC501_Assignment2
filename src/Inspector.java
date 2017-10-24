@@ -5,8 +5,7 @@
  * Inspector class to recursively introspect on objects
  */
 import java.lang.reflect.*;
-import java.io.*;
-import java.util.Arrays;
+
 
 public class Inspector {
 
@@ -31,8 +30,14 @@ public class Inspector {
      *
      */
 
-    //introspect on the passed object and print info as standard output
-    //if recursive boolean true, also fully inspect every field that is an object
+
+    /***
+     * Introspect on the passed object and print info as standard output.
+     * If recursive boolean true, also fully inspect every field that is an object
+     * @param obj -  instantiated object
+     * @param recursive - boolean for recursive introspection
+     * @author Johnny Chung
+     */
     public void inspect(Object obj, boolean recursive){
 
         //get metaobject for instantiated base level object
@@ -59,10 +64,17 @@ public class Inspector {
             e.printStackTrace();
             return;
         }
-
-
     }
 
+
+    /***
+     * Introspect and display declarations/properties of the class,
+     * including: name, superclasses, interfaces, method signatures, and field values.
+     * If superclasses/interfaces present, traverse up hierarchy and display declarations
+     * @param obj -  instantiated object
+     * @param classObject - class meta-object of object
+     * @param fieldObjects - array of field objects for object
+     */
     public void inspectClass(Object obj, Class classObject, Field[] fieldObjects){
         //get name of declaring class
         System.out.println("Declaring class: " + obj);
@@ -90,28 +102,30 @@ public class Inspector {
 
         //display contents if initial object is an array
         if(classObject.isArray()){
-
             Class arrayType = classObject.getComponentType();
             System.out.println("Component Type: " + arrayType.getName());
 
             Object arrayElements[]  = getObjectArray(obj);
             displayArrayElements(arrayElements);
-
         }
 
         //traverse hierarchy get constructors/methods/field values that superclass declares
         inspectSuperclass(obj, superClassObject);
-
 
         //traverse hierarchy again for interfaces
         for(Class i: interfaceObjects){
             inspectInterfaces(obj, i);
         }
 
-
     }
 
-    //method to recursively introspect on Field objects and Array elements (if objects)
+
+    /***
+     * Method to recursively introspect on Field objects and Array elements (if element is an object)
+     * @param fieldObjects - array of Field objects to recurse on
+     * @param obj - instantiated object from which the fields came from
+     * @param recursive - boolean for recursive introspection
+     */
     public void inspectFields(Field[] fieldObjects, Object obj, boolean recursive){
 
         System.out.println();
@@ -139,45 +153,38 @@ public class Inspector {
                                 String elementTypeString = null;
 
                                 //recurse on non-null element
-                                if(element != null)
-                                    inspect(element, recursive);
-                                else
-                                    System.out.println("      object is null...");
+                                if(element != null){inspect(element, recursive);}
+                                else{System.out.println("      object is null...");}
                             }
                         }
-                        else
-                            System.out.println("      Array is empty...");
-
+                        else{System.out.println("      Array is empty...");}
 
                     }
                     //otherwise primitive array, don't recurse on elements
-                    else
-                        System.out.println(" (Primitive)");
+                    else{System.out.println(" (Primitive)");}
 
                 }
                 //field is an object, recurse on it if not null
                 else if(!fieldType.isPrimitive()){
                     System.out.println("Field: " + f.getName() + " - Object");
 
-                    if(f.get(obj) != null)
-                        inspect(f.get(obj), recursive);
-                    else
-                        System.out.println("      object is null...\n");
-
+                    if(f.get(obj) != null){inspect(f.get(obj), recursive);}
+                    else{System.out.println("      object is null...\n");}
                 }
                 //otherwise field is primitive, don't recurse
-                else
-                    System.out.println("Field: " + f.getName() + " - Primitive");
+                else{System.out.println("Field: " + f.getName() + " - Primitive");}
 
             }
             catch(Exception e){
                 e.printStackTrace();
             }
-
         }
     }
 
-    //general method to display names of items in class Object arrays
+    /***
+     * general method to display names of items in class Object arrays
+     * @param classTypeObjects
+     */
     private void displayClassTypeObjects(Class[] classTypeObjects){
         if(classTypeObjects.length > 0){
             for(Class c : classTypeObjects){
@@ -188,8 +195,7 @@ public class Inspector {
                     System.out.print(", ");
             }
         }
-        else
-            System.out.print("");
+        else{System.out.print("");}
     }
 
     //inspect and display method objects

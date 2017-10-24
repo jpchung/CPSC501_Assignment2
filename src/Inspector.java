@@ -181,9 +181,10 @@ public class Inspector {
         }
     }
 
+
     /***
      * general method to display names of items in class Object arrays
-     * @param classTypeObjects
+     * @param classTypeObjects -  array of Class typed objects
      */
     private void displayClassTypeObjects(Class[] classTypeObjects){
         if(classTypeObjects.length > 0){
@@ -198,7 +199,12 @@ public class Inspector {
         else{System.out.print("");}
     }
 
-    //inspect and display method objects
+
+    /***
+     * Method to inspect and display method objects,
+     * including modifiers, parameters/return type, and exceptions
+     * @param methodObjects - array of method objects to inspect
+     */
     private void inspectMethods(Method[] methodObjects){
         for(Method m : methodObjects){
 
@@ -233,7 +239,12 @@ public class Inspector {
         }
     }
 
-    //inspect and display Constructor objects
+
+    /***
+     * Method to inspect and display Constructor objects,
+     * including modifiers and parameter types
+     * @param constructorObjects - array of Constructor objects to inspect
+     */
     public void inspectConstructors(Constructor[] constructorObjects){
         for(Constructor c : constructorObjects){
             //query Constructor objects for name, parameter types, and modifier
@@ -249,7 +260,12 @@ public class Inspector {
         }
     }
 
-    //inspect and display type and values for Fields
+
+    /***
+     * Method to inspect and display the field values of an object
+     * @param obj - instantiated object, the field values of which we want to inspect
+     * @param fieldObjects - array of Field objects to inspect values for
+     */
     public void inspectFieldValues(Object obj, Field[] fieldObjects){
         for(Field f : fieldObjects){
             try{
@@ -269,31 +285,25 @@ public class Inspector {
                     Class arrayType= fieldType.getComponentType();
                     int arrayLength = Array.getLength(fieldValue);
                     fieldTypeString = arrayType.getName() + "[" + arrayLength + "]";
-
                 }
                 else{
                     fieldTypeString = fieldType.toString();
-                    if(fieldType.isPrimitive()){
-                        fieldValueString = fieldValue.toString();
-                    }
-                    else if(fieldValue != null){
-                        //let value be object's class and id hashcode if instantiated
-                        fieldValueString = fieldValue.getClass().getName() + " " + fieldValue.hashCode();
+                    //display value if field is primitive
+                    if(fieldType.isPrimitive()){ fieldValueString = fieldValue.toString();}
+                    //let value be object's class and id hashcode if instantiated
+                    else if(fieldValue != null){ fieldValueString = fieldValue.getClass().getName() + " " + fieldValue.hashCode();}
 
-                        //otherwise defaults to null
-                    }
+                    //otherwise defaults to null
                 }
                 System.out.println("Field: " + modifierString + " " + fieldTypeString + " " + f.getName());
 
                 //print contents if field is an array
                 if(fieldType.isArray()){
-
                     Object arrayElements[] = getObjectArray(fieldValue);
                     displayArrayElements(arrayElements);
                 }
                 //otherwise just print value
-                else
-                    System.out.println("      Value: " + fieldValueString);
+                else{System.out.println("      Value: " + fieldValueString);}
 
             } catch(Exception e){
                 e.printStackTrace();
@@ -302,7 +312,11 @@ public class Inspector {
         }
     }
 
-    //generic method to display elements in an object array
+
+    /***
+     * generic method to display elements in an object array
+     * @param arrayElements - array of objects
+     */
     public void displayArrayElements(Object[] arrayElements){
 
         for(int i =0; i < arrayElements.length; i++){
@@ -323,14 +337,18 @@ public class Inspector {
         }
     }
 
-    //get array from Object that has Array class type
+    /***
+     * Method to get Object array from an Object that has Array class type
+     * @param obj - instantiated object that has Array class type
+     * @return objArray - object array
+     */
     private Object[] getObjectArray(Object obj){
 
         Object[] objArray;
         //if obj is already an object array, just cast and return
-        if(obj instanceof Object[]){
+        if(obj instanceof Object[])
             objArray =  (Object[]) obj;
-        }
+
         //otherwise obj is a primitive array, so get elements by index and wrap primitives
         else{
             int arrayLength = Array.getLength(obj);
@@ -343,23 +361,31 @@ public class Inspector {
 
     }
 
-    //method to inspect an object's superclass
+
+    /***
+     * Method to inspect an object's superclass,
+     * including further superclasses, interfaces, methods and field values.
+     * Method will traverse up hierarchy via recursion if superclass has superclass
+     * @param obj - instantiated object for which its superclass will be inspected
+     * @param superClass - Class meta-object of object's superclass
+     */
     private void inspectSuperclass(Object obj,Class superClass){
         System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: START\n\n", superClass.getName());
 
+        //check if superclass has another superclass in hierarchy
         Class nextSuperClass = null;
         if(superClass.getSuperclass() != null){
             nextSuperClass = superClass.getSuperclass();
             System.out.println("Superclass: " + nextSuperClass.getName());
         }
 
+        //check if superclass has implemented interfaces
         Class superInterfaces[] = null;
         if(superClass.getInterfaces() != null) {
             superInterfaces = superClass.getInterfaces();
             System.out.print("Interfaces: ");
             displayClassTypeObjects(superInterfaces);
             System.out.println();
-
         }
 
         Constructor superConstructors[] = superClass.getConstructors();
@@ -376,26 +402,35 @@ public class Inspector {
             System.out.printf("\nsuperclass %s has a superclass %s!\n",superClass.getName(), nextSuperClass.getName() );
             inspectSuperclass(obj, nextSuperClass);
         }
-        else
-            System.out.printf("\nsuperclass %s has no other superclass...\n", superClass.getName());
+        else{System.out.printf("\nsuperclass %s has no other superclass...\n", superClass.getName());}
 
+        //inspect up hierarchy for interfaces as well
         if(superInterfaces.length > 0) {
             for(Class i: superInterfaces){
                 System.out.printf("\nsuperclass %s has interface %s!\n", superClass.getName(), i.getName());
                 inspectInterfaces(obj, i);
             }
         }
-        else
-            System.out.printf("\nsuperclass %s has no interfaces...\n", superClass.getName());
+        else{System.out.printf("\nsuperclass %s has no interfaces...\n", superClass.getName());}
 
         System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: END\n\n", superClass.getName());
 
     }
 
 
+    /***
+     * Method to inspect Interfaces implemented by an object's class,
+     * including fields and methods.
+     * Method will traverse up hierarchy if Interfaces inherits any superclasses.
+     * Interfaces can't implement other interfaces by their nature,
+     * so no point to inspect for that.
+     * @param obj - instantiated object for which its implemented interface will be inspected
+     * @param interfaceClass - Class meta-object of Interface to inspect
+     */
     private void inspectInterfaces(Object obj, Class interfaceClass){
         System.out.printf("\n////// INSPECTING INTERFACE %s: START\n\n", interfaceClass.getName());
 
+        //check for inherited superclasses
         Class interfaceSuperClass = null;
         if(interfaceClass.getSuperclass() != null){
             interfaceSuperClass = interfaceClass.getSuperclass();
@@ -408,12 +443,12 @@ public class Inspector {
         Field interfaceFields[] = interfaceClass.getDeclaredFields();
         inspectFieldValues(obj, interfaceFields);
 
+        //inspect up hierarchy for superclasses of this interface
         if(interfaceSuperClass != null){
             System.out.printf("\nInterface %s has a superclass %s!\n", interfaceClass.getName(), interfaceSuperClass.getName());
             inspectSuperclass(obj, interfaceSuperClass);
         }
-        else
-            System.out.printf("\nInterface %s has no superclass...\n", interfaceClass.getName());
+        else{System.out.printf("\nInterface %s has no superclass...\n", interfaceClass.getName());}
 
         System.out.printf("\n////// INSPECTING INTERFACE %s: END\n\n", interfaceClass.getName());
 

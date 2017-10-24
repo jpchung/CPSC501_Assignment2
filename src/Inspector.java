@@ -1,10 +1,11 @@
 /**
- * CPSC 501 Assignment 2
+ * CPSC 501 Assignment 2 (Java R
  * @author Johnny Chung
  *
  * Inspector class to recursively introspect on objects
  */
 import java.lang.reflect.*;
+import java.io.*;
 import java.util.Arrays;
 
 public class Inspector {
@@ -103,6 +104,9 @@ public class Inspector {
 
 
         //traverse hierarchy again for interfaces
+        for(Class i: interfaceObjects){
+            inspectInterfaces(obj, i);
+        }
 
 
     }
@@ -343,6 +347,15 @@ public class Inspector {
             System.out.println("Superclass: " + nextSuperClass.getName());
         }
 
+        Class superInterfaces[] = null;
+        if(superClass.getInterfaces() != null) {
+            superInterfaces = superClass.getInterfaces();
+            System.out.print("Interfaces: ");
+            displayClassTypeObjects(superInterfaces);
+            System.out.println();
+
+        }
+
         Constructor superConstructors[] = superClass.getConstructors();
         inspectConstructors(superConstructors);
 
@@ -358,8 +371,17 @@ public class Inspector {
             inspectSuperclass(obj, nextSuperClass);
         }
         else
-            System.out.printf("\nsuperclass %s has no other superclass...\n", superClass.getName())
-;
+            System.out.printf("\nsuperclass %s has no other superclass...\n", superClass.getName());
+
+        if(superInterfaces.length > 0) {
+            for(Class i: superInterfaces){
+                System.out.printf("\nsuperclass %s has interface %s!\n", superClass.getName(), i.getName());
+                inspectInterfaces(obj, i);
+            }
+        }
+        else
+            System.out.printf("\nsuperclass %s has no interfaces...\n", superClass.getName());
+
         System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: END\n\n", superClass.getName());
 
     }
@@ -368,7 +390,24 @@ public class Inspector {
     private void inspectInterfaces(Object obj, Class interfaceClass){
         System.out.printf("\n////// INSPECTING INTERFACE %s: START\n\n", interfaceClass.getName());
 
+        Class interfaceSuperClass = null;
+        if(interfaceClass.getSuperclass() != null){
+            interfaceSuperClass = interfaceClass.getSuperclass();
+            System.out.println("Superclass: " + interfaceSuperClass.getName());
+        }
 
+        Method interfaceMethods[] = interfaceClass.getDeclaredMethods();
+        inspectMethods(interfaceMethods);
+
+        Field interfaceFields[] = interfaceClass.getDeclaredFields();
+        inspectFieldValues(obj, interfaceFields);
+
+        if(interfaceSuperClass != null){
+            System.out.printf("\nInterface %s has a superclass %s!\n", interfaceClass.getName(), interfaceSuperClass.getName());
+            inspectSuperclass(obj, interfaceSuperClass);
+        }
+        else
+            System.out.printf("\nInterface %s has no superclass...\n", interfaceClass.getName());
 
         System.out.printf("\n////// INSPECTING INTERFACE %s: END\n\n", interfaceClass.getName());
 

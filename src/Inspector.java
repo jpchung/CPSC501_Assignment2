@@ -41,7 +41,6 @@ public class Inspector {
         try{
             classObject = obj.getClass();
 
-
             //get fields declared by the class
             Field fieldObjects[] = classObject.getDeclaredFields();
 
@@ -101,13 +100,10 @@ public class Inspector {
 
         //traverse hierarchy get constructors/methods/field values that superclass declares
         inspectSuperclass(obj, superClassObject);
-        if(superClassObject.getSuperclass() != null){
 
-            Class nextSuperClass = superClassObject.getSuperclass();
-            System.out.printf("superclass %s has a superclass %s!\n",superClassObject.getName(), nextSuperClass.getName() );
 
-            inspectSuperclass(obj, nextSuperClass);
-        }
+        //traverse hierarchy again for interfaces
+
 
     }
 
@@ -341,6 +337,12 @@ public class Inspector {
     private void inspectSuperclass(Object obj,Class superClass){
         System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: START\n\n", superClass.getName());
 
+        Class nextSuperClass = null;
+        if(superClass.getSuperclass() != null){
+            nextSuperClass = superClass.getSuperclass();
+            System.out.println("Superclass: " + nextSuperClass.getName());
+        }
+
         Constructor superConstructors[] = superClass.getConstructors();
         inspectConstructors(superConstructors);
 
@@ -348,10 +350,27 @@ public class Inspector {
         inspectMethods(superMethods);
 
         Field superFields[] = superClass.getDeclaredFields();
-
         inspectFieldValues(obj,superFields);
 
+        //recursively inspect up hierarchy if superclass has superclass
+        if(nextSuperClass != null){
+            System.out.printf("\nsuperclass %s has a superclass %s!\n",superClass.getName(), nextSuperClass.getName() );
+            inspectSuperclass(obj, nextSuperClass);
+        }
+        else
+            System.out.printf("\nsuperclass %s has no other superclass...\n", superClass.getName())
+;
         System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: END\n\n", superClass.getName());
+
+    }
+
+
+    private void inspectInterfaces(Object obj, Class interfaceClass){
+        System.out.printf("\n////// INSPECTING INTERFACE %s: START\n\n", interfaceClass.getName());
+
+
+
+        System.out.printf("\n////// INSPECTING INTERFACE %s: END\n\n", interfaceClass.getName());
 
     }
 

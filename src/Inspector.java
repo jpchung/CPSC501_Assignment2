@@ -71,14 +71,6 @@ public class Inspector {
         Class superClassObject =  classObject.getSuperclass();
         System.out.println("Superclass: " + superClassObject.getName());
 
-        System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: START\n\n", superClassObject.getName());
-
-        //get constructors/methods/fields/field values fo superclass
-        inspectSuperclass(obj, superClassObject);
-
-        System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: END\n\n", superClassObject.getName());
-
-
         //get interfaces
         Class interfaceObjects[] = classObject.getInterfaces();
         System.out.print("Interfaces: ");
@@ -105,7 +97,16 @@ public class Inspector {
             Object arrayElements[]  = getObjectArray(obj);
             displayArrayElements(arrayElements);
 
+        }
 
+        //traverse hierarchy get constructors/methods/field values that superclass declares
+        inspectSuperclass(obj, superClassObject);
+        if(superClassObject.getSuperclass() != null){
+
+            Class nextSuperClass = superClassObject.getSuperclass();
+            System.out.printf("superclass %s has a superclass %s!\n",superClassObject.getName(), nextSuperClass.getName() );
+
+            inspectSuperclass(obj, nextSuperClass);
         }
 
     }
@@ -336,7 +337,10 @@ public class Inspector {
 
     }
 
+    //method to inspect an object's superclass
     private void inspectSuperclass(Object obj,Class superClass){
+        System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: START\n\n", superClass.getName());
+
         Constructor superConstructors[] = superClass.getConstructors();
         inspectConstructors(superConstructors);
 
@@ -346,6 +350,9 @@ public class Inspector {
         Field superFields[] = superClass.getDeclaredFields();
 
         inspectFieldValues(obj,superFields);
+
+        System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: END\n\n", superClass.getName());
+
     }
 
 

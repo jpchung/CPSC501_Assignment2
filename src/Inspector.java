@@ -32,14 +32,14 @@ public class Inspector {
 
 
     //HashSet for checking unique object inspection
-    private HashSet<Integer> classHash;
+    private HashSet<Integer> objectHash;
 
 
     /***
      * Default constructor to initialize HashSet
      */
     public Inspector(){
-        this.classHash = new HashSet<Integer>();
+        this.objectHash = new HashSet<Integer>();
     }
 
 
@@ -54,7 +54,8 @@ public class Inspector {
 
         //add unique hashcode of object to classHash upon inspection
         //will check this later to prevent inspect() method from infinite recursion in case of object loop
-        this.classHash.add(obj.hashCode());
+        HashSet<Integer> objectHash = this.getObjectHash();
+        objectHash.add(obj.hashCode());
 
         //get metaobject for instantiated base level object
         Class classObject = null;
@@ -375,7 +376,7 @@ public class Inspector {
      * @param obj - instantiated object that has Array class type
      * @return objArray - object array
      */
-    private Object[] getObjectArray(Object obj){
+    public Object[] getObjectArray(Object obj){
 
         Object[] objArray;
         //if obj is already an object array, just cast and return
@@ -494,12 +495,19 @@ public class Inspector {
      * @return true if already inspected i.e. classHash already contains object's hashCode
      * @return false if not inspected yet i.e. classHash doesn't have object hashCode
      */
-    private boolean alreadyInspected(Object obj){
-        if(this.classHash.contains(obj.hashCode()))
+    public boolean alreadyInspected(Object obj){
+        HashSet<Integer> objectHash = this.getObjectHash();
+        if(objectHash.contains(obj.hashCode()))
             return true;
         else
             return false;
     }
+
+    /***
+     * Accessor method for private HashSet for object hashcodes
+     * @return HashSet<Integer>
+     */
+    public HashSet<Integer> getObjectHash(){return this.objectHash;}
 
 
 }

@@ -76,6 +76,16 @@ public class Inspector {
                 System.out.printf("\n---- RECURSION ON FIELD OBJECTS IN %s: END ----\n\n", classObject.getName());
             }
 
+            //traverse hierarchy get constructors/methods/field values that superclass declares
+            Class superClassObject = classObject.getSuperclass();
+            inspectSuperclass(obj, superClassObject);
+
+            //traverse hierarchy again for interfaces
+            Class[] interfaceObjects = classObject.getInterfaces();
+            for(Class i: interfaceObjects){
+                inspectInterface(obj, i);
+            }
+
         } catch(Exception e){
             e.printStackTrace();
             return;
@@ -125,13 +135,6 @@ public class Inspector {
             displayArrayElements(arrayElements);
         }
 
-        //traverse hierarchy get constructors/methods/field values that superclass declares
-        inspectSuperclass(obj, superClassObject);
-
-        //traverse hierarchy again for interfaces
-        for(Class i: interfaceObjects){
-            inspectInterfaces(obj, i);
-        }
 
     }
 
@@ -400,7 +403,7 @@ public class Inspector {
      * @param superClass - Class meta-object of object's superclass
      */
     private void inspectSuperclass(Object obj,Class superClass){
-        System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: START\n\n", superClass.getName());
+        System.out.printf("\n---- INSPECTING SUPERCLASS %s: START ----\n\n", superClass.getName());
 
         //check if superclass has another superclass in hierarchy
         Class nextSuperClass = null;
@@ -438,12 +441,12 @@ public class Inspector {
         if(superInterfaces.length > 0) {
             for(Class i: superInterfaces){
                 System.out.printf("\nsuperclass %s has interface %s!\n", superClass.getName(), i.getName());
-                inspectInterfaces(obj, i);
+                inspectInterface(obj, i);
             }
         }
         else{System.out.printf("\nsuperclass %s has no interfaces...\n", superClass.getName());}
 
-        System.out.printf("\n>>>>>> INSPECTING SUPERCLASS %s: END\n\n", superClass.getName());
+        System.out.printf("\n---- INSPECTING SUPERCLASS %s: END ----\n\n", superClass.getName());
 
     }
 
@@ -457,8 +460,8 @@ public class Inspector {
      * @param obj - instantiated object for which its implemented interface will be inspected
      * @param interfaceClass - Class meta-object of Interface to inspect
      */
-    private void inspectInterfaces(Object obj, Class interfaceClass){
-        System.out.printf("\n////// INSPECTING INTERFACE %s: START\n\n", interfaceClass.getName());
+    private void inspectInterface(Object obj, Class interfaceClass){
+        System.out.printf("\n---- INSPECTING INTERFACE %s: START ----\n\n", interfaceClass.getName());
 
         //check for inherited superclasses
         Class interfaceSuperClass = null;
@@ -480,7 +483,7 @@ public class Inspector {
         }
         else{System.out.printf("\nInterface %s has no superclass...\n", interfaceClass.getName());}
 
-        System.out.printf("\n////// INSPECTING INTERFACE %s: END\n\n", interfaceClass.getName());
+        System.out.printf("\n---- INSPECTING INTERFACE %s: END ----\n\n", interfaceClass.getName());
 
     }
 

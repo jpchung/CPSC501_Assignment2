@@ -69,13 +69,6 @@ public class Inspector {
             //get class
             inspectClass(obj, classObject, fieldObjects);
 
-            //check if need to introspect recursively on field objects
-            if(recursive){
-                System.out.printf("\n---- RECURSION ON FIELD OBJECTS IN %s: START ----\n", classObject.getName());
-                inspectFields(fieldObjects, obj, recursive);
-                System.out.printf("\n---- RECURSION ON FIELD OBJECTS IN %s: END ----\n\n", classObject.getName());
-            }
-
             //traverse hierarchy get constructors/methods/field values that superclass declares
             Class superClassObject = classObject.getSuperclass();
             inspectSuperclass(obj, superClassObject);
@@ -84,6 +77,13 @@ public class Inspector {
             Class[] interfaceObjects = classObject.getInterfaces();
             for(Class i: interfaceObjects){
                 inspectInterface(obj, i);
+            }
+
+            //check if need to introspect recursively on field objects
+            if(recursive){
+                System.out.printf("\n==== RECURSION ON FIELD OBJECTS IN %s: START ====\n", classObject.getName());
+                inspectFields(fieldObjects, obj, recursive);
+                System.out.printf("\n==== RECURSION ON FIELD OBJECTS IN %s: END ====\n\n", classObject.getName());
             }
 
         } catch(Exception e){

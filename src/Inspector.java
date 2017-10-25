@@ -5,7 +5,7 @@
  * Inspector class to recursively introspect on objects
  */
 import java.lang.reflect.*;
-
+import java.util.HashSet;
 
 public class Inspector {
 
@@ -31,6 +31,18 @@ public class Inspector {
      */
 
 
+    //HashSet for checking unique object inspection
+    private HashSet<Integer> classHash;
+
+
+    /***
+     * Default constructor to initialize HashSet
+     */
+    public Inspector(){
+        this.classHash = new HashSet<Integer>();
+    }
+
+
     /***
      * Introspect on the passed object and print info as standard output.
      * If recursive boolean true, also fully inspect every field that is an object
@@ -39,6 +51,10 @@ public class Inspector {
      * @author Johnny Chung
      */
     public void inspect(Object obj, boolean recursive){
+
+        //add unique hashcode of object to classHash upon inspection
+        //will check this later to prevent inspect() method from infinite recursion in case of object loop
+        this.classHash.add(obj.hashCode());
 
         //get metaobject for instantiated base level object
         Class classObject = null;
@@ -152,8 +168,15 @@ public class Inspector {
                                 Object element =  arrayElements[i];
                                 String elementTypeString = null;
 
-                                //recurse on non-null element
-                                if(element != null){inspect(element, recursive);}
+                                //recurse on non-null unique element
+                                if(element != null){
+                                    //check if already inspected this object
+                                    if(alreadyInspected(element)){
+                                        System.out.println("Already inspected this object...");
+                                    }
+                                    else{inspect(element, recursive);}
+
+                                }
                                 else{System.out.println("      object is null...");}
                             }
                         }
@@ -164,11 +187,18 @@ public class Inspector {
                     else{System.out.println(" (Primitive)");}
 
                 }
-                //field is an object, recurse on it if not null
+                //field is an object, recurse on it if not null and unique
                 else if(!fieldType.isPrimitive()){
                     System.out.println("Field: " + f.getName() + " - Object");
 
-                    if(f.get(obj) != null){inspect(f.get(obj), recursive);}
+                    if(f.get(obj) != null){
+                        //check if already inspected this object
+                        if(alreadyInspected(f.get(obj))){
+                            System.out.println("Already inspected this object...");
+                        }
+                        else{inspect(f.get(obj), recursive);}
+
+                    }
                     else{System.out.println("      object is null...\n");}
                 }
                 //otherwise field is primitive, don't recurse
@@ -452,6 +482,20 @@ public class Inspector {
 
         System.out.printf("\n////// INSPECTING INTERFACE %s: END\n\n", interfaceClass.getName());
 
+    }
+
+
+    /***
+     * Method to check if object has already been inspected
+     * @param obj - instantiated object to check hashcode for
+     * @return true if already inspected i.e. classHash already contains object's hashCode
+     * @return false if not inspected yet i.e. classHash doesn't have object hashCode
+     */
+    private boolean alreadyInspected(Object obj){
+        if(this.classHash.contains(obj.hashCode()))
+            return true;
+        else
+            return false;
     }
 
 

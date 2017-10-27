@@ -360,7 +360,7 @@ public class Inspector {
 
             String elementDisplay = null;
             if(element != null)
-                elementDisplay =  displayElementValue(element);
+                elementDisplay =  getElementValue(element);
 
             System.out.println("      index " + i + ": " + elementDisplay);
 
@@ -373,7 +373,7 @@ public class Inspector {
      * @param element - object, element of an object array
      * @return string of the element's value
      */
-    private String displayElementValue(Object element){
+    public String getElementValue(Object element){
         String value =  "";
 
         if(element != null){
@@ -420,8 +420,6 @@ public class Inspector {
         return objArray;
 
     }
-
-
 
 
     /***

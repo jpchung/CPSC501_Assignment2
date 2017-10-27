@@ -110,4 +110,34 @@ public class TestInspector {
 
     }
 
+    @Test
+    public void testGetElementValue(){
+        Inspector inspector =  new Inspector();
+
+        Object nullElement = null;
+        String elementValue = inspector.getElementValue(nullElement);
+        assertTrue(elementValue.length() < 1);
+
+        Character charElement= new Character('a');
+        elementValue = inspector.getElementValue(charElement);
+        assertTrue(elementValue.contains("a"));
+
+        Integer intElement =  new Integer(420);
+        elementValue = inspector.getElementValue(intElement);
+        assertTrue(elementValue.contains("420"));
+
+        Double doubleElement =  new Double(3.14159);
+        elementValue = inspector.getElementValue(doubleElement);
+        assertTrue(elementValue.contains("3.14159"));
+
+        Boolean boolElement = new Boolean(true);
+        elementValue = inspector.getElementValue(boolElement);
+        assertTrue(elementValue.contains("true"));
+
+        ClassB[][] nestedArrayElement = new ClassB[12][12];
+        String elementValue2 = inspector.getElementValue(nestedArrayElement);
+        Class nestedArrayClass = nestedArrayElement.getClass();
+        assertTrue(elementValue2.contains(nestedArrayClass.getName()));
+    }
+
 }

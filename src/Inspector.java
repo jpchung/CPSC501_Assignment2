@@ -4,6 +4,8 @@
  *
  * Inspector class to recursively introspect on objects
  */
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import java.lang.reflect.*;
 import java.util.HashSet;
 
@@ -357,19 +359,43 @@ public class Inspector {
             Object element = arrayElements[i];
 
             String elementDisplay = null;
-            if(element != null){
-                elementDisplay = element.toString();
-
-                //value of element if object
-                Class elementClass = element.getClass();
-                if(!elementClass.isPrimitive() && !elementClass.isArray())
-                //if(!elementClass.isPrimitive())
-                    elementDisplay = elementClass.getName() + " " + element.hashCode();
-            }
+            if(element != null)
+                elementDisplay =  displayElementValue(element);
 
             System.out.println("      index " + i + ": " + elementDisplay);
+
         }
     }
+
+
+    /***
+     * Method to return value of element object as a string
+     * @param element - object, element of an object array
+     * @return string of the element's value
+     */
+    private String displayElementValue(Object element){
+        String value =  "";
+
+        if(element != null){
+            //check if wrapper class instance
+            if(element instanceof Character ||
+                    element instanceof Integer ||
+                    element instanceof Float ||
+                    element instanceof Long ||
+                    element instanceof Short ||
+                    element instanceof Double ||
+                    element instanceof Byte ||
+                    element instanceof Boolean)
+                value += String.valueOf(element);
+            else{
+                Class elementClass = element.getClass();
+                value = elementClass.getName() + " " + element.hashCode();
+            }
+        }
+
+        return value;
+    }
+
 
     /***
      * Method to get Object array from an Object that has Array class type
@@ -394,6 +420,8 @@ public class Inspector {
         return objArray;
 
     }
+
+
 
 
     /***
